@@ -8,13 +8,13 @@ Just like the original game, the objective is to survive as long as possible wit
 
 The map is a 25x25 units which can all be setup to contain either a wall or Food. The game starts with the snake being long 3 units.
 
-<div style="text-align: center">
+<div align="center">
     <img src="readmefs/snake.png" style="height: 100px">
 </div>
 
 Every time a fruit is eaten the number of sections increases and so does the player's score. However, if the snake collides with any of the walls or itself the game ends and the final score is shown in a new background.
 
-<div style="text-align: center">
+<div align="center">
     <img src="pictures/food.png" style="height: 50px">
     <img src="pictures/wall.png" style="height: 50px">
 </div>
