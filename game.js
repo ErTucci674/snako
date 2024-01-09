@@ -18,6 +18,7 @@
 let Game = {
     canvas: null,
     context: null,
+    scale: 1,
 
     // Window Size
     width: 0,
@@ -37,6 +38,7 @@ let Game = {
     snakeDir: 0,
     snakeTurn: 0,
     score: 0,
+    scoreScale: 1,
 
     // Food
     food: new Image(),
@@ -70,11 +72,14 @@ let Game = {
 
     // Rendering
     render: function () {
-        this.context.clearRect(0, 0, this.width, this.height);
+        this.context.clearRect(10, 10, this.width - 10, this.height - 10);
 
+        this.context.save()
+        this.context.scale(this.scale, this.scale);
         this.renderGrid();
         this.renderScore();
         this.snake.render(this.context, this.rectStartX, this.rectStartY);
+        this.context.restore();
     },
 
     renderGrid: function () {
@@ -101,7 +106,7 @@ let Game = {
 
     renderScore: function () {
         this.context.fillStyle = "black";
-        this.context.fillText("Score: " + (this.snake.sectionsNum - snakeSectionsStart).toString(), 30, 30);
+        this.context.fillText("Score: " + (this.snake.sectionsNum - snakeSectionsStart).toString(), 50, 50);
     },
 
 
@@ -112,6 +117,14 @@ let Game = {
         this.widthCenter = this.width * 0.5;
         this.height = this.canvas.height = window.innerHeight;
         this.heightCenter = this.height * 0.5;
+
+        // Adjust scaling if game is larger than screen
+        if (rectSide > this.height) {
+            this.scale = (this.height / rectSide) * 0.9;
+
+            this.widthCenter /= this.scale;
+            this.heightCenter /= this.scale;
+        }
 
         // Map
         this.setGrid();

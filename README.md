@@ -122,6 +122,14 @@ setup: function () {
     this.height = this.canvas.height = window.innerHeight;
     this.heightCenter = this.height * 0.5;
 
+    // Adjust scaling if game is larger than screen
+    if (rectSide > this.height) {
+        this.scale = (this.height / rectSide) * 0.9;
+
+        this.widthCenter /= this.scale;
+        this.heightCenter /= this.scale;
+    }
+
     // Map
     this.setGrid();
     this.rectStartX = this.widthCenter - rectHalfSide;
@@ -137,10 +145,14 @@ setup: function () {
 
     // Text
     this.context.font = FONT;
-}
+},
 ```
 
 The main element is the `this.canvas` variable which stores and changes the attributes of the `<canvas>` element. This is used to take control of the "drawing frame", distances and sizes of everything in the game.
+
+The map has a standard size of 800x800 pixels. Hence, a screen of 720px would not fit the game in the window, here the `scale` attribute comes in handy. This is the value used to set the `context` scale of the game depending on the screen height. The ratio between the screen height and the window is taken and then decreased by 10% (multiplying by 0.9);
+
+_Important_ - The scaling changes the rendering of all of the pictures, hence the quality lowers and 'renderig issues' might occurs (e.g, different colour shading, blurring).
 
 #### Setup Map 🗺️
 The map is just 'png' file and on top of it walls and food is placed. The map is divided into 25x25 units stored in a 2D-array of corresponding dimensions, `grid`. The value stored in each element of the array affects the what is going to be placed on that section of the map. The equivalent values can be found in the `globals.js` file.
@@ -173,7 +185,24 @@ let Quad = {
 ```
 
 #### Rendering 🖼️
-The `renderGrid()` function in the `game` file goes through the `grid` array by using _for loops_ and checks what needs to be rendered on part of the map.
+The `render()` function in the `game.js` file takes care of all of the rendering in the game.
+
+```js
+render: function () {
+    this.context.clearRect(10, 10, this.width - 10, this.height - 10);
+
+    this.context.save()
+    this.context.scale(this.scale, this.scale);
+    this.renderGrid();
+    this.renderScore();
+    this.snake.render(this.context, this.rectStartX, this.rectStartY);
+    this.context.restore();
+},
+```
+
+All the rendering functions are contained in between `save()` and `restore()` so that the scale can be temporarily set and every adjusted to the right size in the frame loading.
+
+The `renderGrid()` function in the `game.js` file goes through the `grid` array by using _for loops_ and checks what needs to be rendered on part of the map.
 
 ```js
 renderGrid: function () {
@@ -198,6 +227,34 @@ renderGrid: function () {
     this.context.stroke();
 }
 ```
+
+The function makes sure that the picture of the map is loaded first and then all the walls and fruits are drawn on top of it. The position of the individual objects are assigned with a "Cartesian Coordinate System" taken from the `grid` array which is then multiplied by the size of the cells so it can be shifted to the correct position on the canvas. The same technique is used to render the snake.
+
+#### Keyboard Controls 🖮
+The `main.js` file takes all the keyboard inputs and gives them as parameters to the `game.js` file's function `eventListener()`. The snake moves when the arrow keys are pressed down.
+
+```js
+eventListener: function (event) {
+    if (this.snakeTurn) {
+        const speed = this.snake.velocity;
+            switch (event.key) {
+                case "ArrowUp":
+                    if (speed.y != 1) {
+                        speed.x = 0;
+                        speed.y = -snakeSpeed;
+                        this.snakeDir = UP;
+                        this.snakeTurn = false;
+                    }
+                    break;
+
+                    ...
+            }
+
+            ...
+    }
+```
+
+In the code above, the moving up example is shown. The `snakeTurn` variable is what allows the user to make the snake changing direction. This allows the turning to happen only when the snake finishes the previous change in directoin and is ready to read the next command.
 
 #### Snake 🐍
 The snake is made up of multiple sections stored in the `sections` array. The head (first section) is the 'leader'. This is the one that is constantly updated with the direction and movement. Whilst the rest of the body takes the position of the section before on each update. The position is stored and managed as a _Cartesian Coordinate System_, just like the one in the `grid` array.
