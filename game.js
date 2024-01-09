@@ -72,7 +72,7 @@ let Game = {
 
     // Rendering
     render: function () {
-        this.context.clearRect(10, 10, this.width - 10, this.height - 10);
+        this.context.clearRect(0, 0, this.width, this.height);
 
         this.context.save()
         this.context.scale(this.scale, this.scale);
