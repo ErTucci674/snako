@@ -24,7 +24,9 @@ Every time a fruit is eaten the number of sections increases and so does the pla
 + JavaScript
 
 ## Start Playing 🎮
-Download the repository or clone it:
+You can click the following to open the GitHub web page: https://ertucci674.github.io/snako/
+
+Otherwise, download the repository or clone it, then:
 
 Open the `index.html` file with any browser and start playing! Preferably, use one of the following ones:
 + Google Chrome
